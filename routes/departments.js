@@ -30,4 +30,19 @@ router.get('/', checkAuth, function (req, res, next) {
   })
 })
 
+router.post('/getRecipients', function (req, res, next) {
+  var departments = req.body.departments.toString()
+
+  connection.query(
+    'select * from dbrf3.user where FIND_IN_SET(department = ?, t.ids) > 0',
+    [department],
+    (err, result) => {
+      console.log(result)
+      res.status(200).json({
+        data: result,
+      })
+    }
+  )
+})
+
 module.exports = router
