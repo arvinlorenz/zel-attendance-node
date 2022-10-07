@@ -43,9 +43,13 @@ router.post('/login', function (req, res, next) {
               { expiresIn: '9999 years' }
             )
 
-            res
-              .status(200)
-              .json({ token, isLoggedIn: true, userData: result[0] })
+            res.status(200).json({
+              token,
+              userId: result[0].id,
+              username: result[0].username,
+              isLoggedIn: true,
+              userData: result[0],
+            })
           }
         }
       }
