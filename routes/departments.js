@@ -3,7 +3,7 @@ var router = express.Router()
 
 var connection = require('../database.js')
 const checkAuth = require('../middleware/check-auth')
-router.get('/', checkAuth, function (req, res, next) {
+router.get('/', function (req, res, next) {
   connection.query('select * from dbrf3.departments', [], (err, result) => {
     if (err) {
       console.log(err)
@@ -32,14 +32,20 @@ router.get('/', checkAuth, function (req, res, next) {
 
 router.post('/getRecipients', function (req, res, next) {
   var departments = req.body.departments.toString()
-
+  console.log(departments)
   connection.query(
-    'select * from dbrf3.user where FIND_IN_SET(department, departments = ?) > 0',
+    'select department, username from dbrf3.user where FIND_IN_SET(department, ?)',
     [departments],
     (err, result) => {
-      console.log(result)
+      if (err) {
+        console.log(err)
+        res.status(400).json({
+          message: 'failed',
+        })
+      }
+      console.log(result.map((r) => r.username))
       res.status(200).json({
-        data: result,
+        recipients: result.map((r) => r.username),
       })
     }
   )
