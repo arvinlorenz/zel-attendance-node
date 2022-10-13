@@ -5,7 +5,7 @@ const jwt = require('jsonwebtoken')
 var connection = require('../database.js')
 
 router.post('/login', function (req, res, next) {
-  var username = req.body.username
+  var username = req.body.username.replace('-', '')
   var password = req.body.password
 
   connection.query(
@@ -68,23 +68,20 @@ router.post('/login', function (req, res, next) {
       (err, result) => {
         if (err) {
           console.log(err)
-          res.status(200).json({
+          res.status(400).json({
             message: 'Auth failed',
           })
         } else {
           if (result.length == 0) {
-            res.status(200).json({
+            res.status(400).json({
               message: 'Auth failed',
             })
-          }
-
-          // if it's admin or employees
-          else {
+          } else {
             // var hashedPassword = result[0].password
-            var passed = password === result[0].last_name
+            var passed = password === result[0].last_name.trim()
 
             if (passed == false) {
-              res.status(200).json({
+              res.status(400).json({
                 message: 'Auth failed',
               })
             } else {
