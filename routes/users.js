@@ -22,7 +22,12 @@ router.post('/login', function (req, res, next) {
           res.status(200).json({
             message: 'Auth failed',
           })
-        } else {
+
+          parentLogin()
+        }
+
+        // if it's admin or employees
+        else {
           var hashedPassword = result[0].password
           var passed = bcrypt.compare(password, hashedPassword)
 
@@ -55,6 +60,59 @@ router.post('/login', function (req, res, next) {
       }
     }
   )
+
+  function parentLogin() {
+    connection.query(
+      'select * from dbrf3.students where username = ?',
+      [username],
+      (err, result) => {
+        if (err) {
+          console.log(err)
+          res.status(200).json({
+            message: 'Auth failed',
+          })
+        } else {
+          if (result.length == 0) {
+            res.status(200).json({
+              message: 'Auth failed',
+            })
+          }
+
+          // if it's admin or employees
+          else {
+            // var hashedPassword = result[0].password
+            var passed = password === result[0].last_name
+
+            if (passed == false) {
+              res.status(200).json({
+                message: 'Auth failed',
+              })
+            } else {
+              req.session.loggedin = true
+              req.session.username = username
+
+              const token = jwt.sign(
+                {
+                  userId: result[0].id,
+                  username,
+                },
+                process.env.JWT_KEY,
+                { expiresIn: '9999 years' }
+              )
+
+              res.status(200).json({
+                token,
+                userId: result[0].id,
+                username,
+                isLoggedIn: true,
+                userData: { username, isParent: true, ...result[0] },
+              })
+            }
+          }
+        }
+      }
+    )
+  }
 
   //   var username = req.body.username
   //   var password = req.body.password
