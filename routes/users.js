@@ -63,7 +63,7 @@ router.post('/login', function (req, res, next) {
 
   function parentLogin() {
     connection.query(
-      'select * from dbrf3.students where username = ?',
+      'select * from dbrf3.students where lrn = ?',
       [username],
       (err, result) => {
         if (err) {
