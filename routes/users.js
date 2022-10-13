@@ -5,7 +5,7 @@ const jwt = require('jsonwebtoken')
 var connection = require('../database.js')
 
 router.post('/login', function (req, res, next) {
-  var username = req.body.username.replace('-', '')
+  var username = req.body.username
   var password = req.body.password
 
   connection.query(
@@ -14,15 +14,11 @@ router.post('/login', function (req, res, next) {
     (err, result) => {
       if (err) {
         console.log(err)
-        res.status(200).json({
-          message: 'Auth failed',
+        res.status(201).json({
+          message: 'Auth failed 1',
         })
       } else {
         if (result.length == 0) {
-          res.status(200).json({
-            message: 'Auth failed',
-          })
-
           parentLogin()
         }
 
@@ -32,8 +28,8 @@ router.post('/login', function (req, res, next) {
           var passed = bcrypt.compare(password, hashedPassword)
 
           if (passed == false) {
-            res.status(200).json({
-              message: 'Auth failed',
+            res.status(201).json({
+              message: 'Auth failed 2',
             })
           } else {
             req.session.loggedin = true
@@ -62,17 +58,20 @@ router.post('/login', function (req, res, next) {
   )
 
   function parentLogin() {
+    const newusername = username.replaceAll('-', '')
     connection.query(
-      'select * from dbrf3.students where lrn = ?',
-      [username],
+      'select * from dbrf3.students where replace(lrn, "-", "") = ?',
+      [newusername],
       (err, result) => {
         if (err) {
           console.log(err)
-          res.status(400).json({
+          res.status(201).json({
             message: 'Auth failed',
           })
         } else {
           if (result.length == 0) {
+            console.log('201')
+
             res.status(400).json({
               message: 'Auth failed',
             })
@@ -86,12 +85,12 @@ router.post('/login', function (req, res, next) {
               })
             } else {
               req.session.loggedin = true
-              req.session.username = username
+              req.session.username = newusername
 
               const token = jwt.sign(
                 {
                   userId: result[0].id,
-                  username,
+                  username: newusername,
                 },
                 process.env.JWT_KEY,
                 { expiresIn: '9999 years' }
@@ -100,9 +99,13 @@ router.post('/login', function (req, res, next) {
               res.status(200).json({
                 token,
                 userId: result[0].id,
-                username,
+                username: newusername,
                 isLoggedIn: true,
-                userData: { username, isParent: true, ...result[0] },
+                userData: {
+                  username: newusername,
+                  isParent: true,
+                  ...result[0],
+                },
               })
             }
           }
