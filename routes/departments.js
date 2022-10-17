@@ -32,9 +32,8 @@ router.get('/', function (req, res, next) {
 
 router.post('/getRecipients', function (req, res, next) {
   var departments = req.body.departments.toString()
-  console.log(departments)
   connection.query(
-    'select department, username from dbrf3.user where FIND_IN_SET(department, ?)',
+    'select department, sid from dbrf3.staffs where FIND_IN_SET(department, ?)',
     [departments],
     (err, result) => {
       if (err) {
@@ -43,9 +42,11 @@ router.post('/getRecipients', function (req, res, next) {
           message: 'failed',
         })
       }
-      console.log(result.map((r) => r.username))
+      console.log(result.map((r) => r.sid))
       res.status(200).json({
-        recipients: result.map((r) => r.username),
+        recipients: result.map((r) =>
+          r.sid.trim().replaceAll('-', '').toLowerCase()
+        ),
       })
     }
   )

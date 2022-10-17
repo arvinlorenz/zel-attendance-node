@@ -22,7 +22,7 @@ router.post('/login', function (req, res, next) {
           parentLogin()
         }
 
-        // if it's admin or employees
+        // if it's admin
         else {
           var hashedPassword = result[0].password
           var passed = bcrypt.compare(password, hashedPassword)
@@ -70,11 +70,12 @@ router.post('/login', function (req, res, next) {
           })
         } else {
           if (result.length == 0) {
-            console.log('201')
+            // console.log('201')
 
-            res.status(400).json({
-              message: 'Auth failed',
-            })
+            // res.status(400).json({
+            //   message: 'Auth failed',
+            // })
+            employeeLogin()
           } else {
             // var hashedPassword = result[0].password
             var passed = password === result[0].last_name.trim()
@@ -114,6 +115,64 @@ router.post('/login', function (req, res, next) {
     )
   }
 
+  function employeeLogin() {
+    const newusername = username.replaceAll('-', '')
+    connection.query(
+      'select * from dbrf3.staffs where replace(sid, "-", "") = ?',
+      [newusername],
+      (err, result) => {
+        if (err) {
+          console.log(err)
+          res.status(201).json({
+            message: 'Auth failed',
+          })
+        } else {
+          if (result.length == 0) {
+            console.log('201')
+
+            res.status(400).json({
+              message: 'Auth failed',
+            })
+          } else {
+            // var hashedPassword = result[0].password
+            var passed =
+              password.trim().toLowerCase() ===
+              result[0].last_name.trim().toLowerCase()
+
+            if (passed == false) {
+              res.status(400).json({
+                message: 'Auth failed',
+              })
+            } else {
+              req.session.loggedin = true
+              req.session.username = newusername
+
+              const token = jwt.sign(
+                {
+                  userId: result[0].id,
+                  username: newusername,
+                },
+                process.env.JWT_KEY,
+                { expiresIn: '9999 years' }
+              )
+
+              res.status(200).json({
+                token,
+                userId: result[0].id,
+                username: newusername,
+                isLoggedIn: true,
+                userData: {
+                  username: newusername,
+                  isAdmin: false,
+                  ...result[0],
+                },
+              })
+            }
+          }
+        }
+      }
+    )
+  }
   //   var username = req.body.username
   //   var password = req.body.password
 
