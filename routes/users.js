@@ -11,7 +11,7 @@ router.post('/login', function (req, res, next) {
   connection.query(
     'select * from dbrf3.user where username = ?',
     [username],
-    (err, result) => {
+    async (err, result) => {
       if (err) {
         console.log(err)
         res.status(201).json({
@@ -19,14 +19,14 @@ router.post('/login', function (req, res, next) {
         })
       } else {
         if (result.length == 0) {
-          parentLogin()
+          parentLogin(username, password)
         }
 
         // if it's admin
         else {
           var hashedPassword = result[0].password
-          var passed = bcrypt.compare(password, hashedPassword)
-
+          var passed = await bcrypt.compare(password, hashedPassword)
+          console.log(passed)
           if (passed == false) {
             res.status(201).json({
               message: 'Auth failed 2',
@@ -57,7 +57,7 @@ router.post('/login', function (req, res, next) {
     }
   )
 
-  function parentLogin() {
+  function parentLogin(username, password) {
     const newusername = username.replaceAll('-', '')
     connection.query(
       'select * from dbrf3.students where replace(lrn, "-", "") = ?',
@@ -70,15 +70,17 @@ router.post('/login', function (req, res, next) {
           })
         } else {
           if (result.length == 0) {
-            // console.log('201')
+            console.log('201')
 
-            // res.status(400).json({
-            //   message: 'Auth failed',
-            // })
-            employeeLogin()
+            res.status(400).json({
+              message: 'Auth failed',
+            })
+            // employeeLogin(username, password)
           } else {
             // var hashedPassword = result[0].password
-            var passed = password === result[0].last_name.trim()
+            var passed =
+              password.trim().toLowerCase() ===
+              result[0].last_name.trim().toLowerCase()
 
             if (passed == false) {
               res.status(400).json({
@@ -115,7 +117,7 @@ router.post('/login', function (req, res, next) {
     )
   }
 
-  function employeeLogin() {
+  function employeeLogin(username, password) {
     const newusername = username.replaceAll('-', '')
     connection.query(
       'select * from dbrf3.staffs where replace(sid, "-", "") = ?',
