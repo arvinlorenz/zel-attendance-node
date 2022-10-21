@@ -9,7 +9,7 @@ router.post('/login', function (req, res, next) {
   var password = req.body.password
 
   connection.query(
-    'select * from dbrf3.user where username = ?',
+    'select * from dbrf3.users where username = ?',
     [username],
     async (err, result) => {
       if (err) {

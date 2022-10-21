@@ -126,7 +126,7 @@ router.post('/getRecipients', function (req, res, next) {
             message: 'failed',
           })
         }
-        console.log(result.map((r) => r.sid))
+
         res.status(200).json({
           recipients: result.map((r) =>
             r.sid.trim().replaceAll('-', '').toLowerCase()
