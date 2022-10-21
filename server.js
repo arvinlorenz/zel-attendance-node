@@ -1,19 +1,8 @@
 require('dotenv').config()
-var mysql = require('mysql')
 var express = require('express')
-var session = require('express-session')
-var path = require('path')
 const userRoutes = require('./routes/users')
 const departmentRoutes = require('./routes/departments')
 const app = express()
-
-app.use(
-  session({
-    secret: 'zel',
-    resave: true,
-    saveUninitialized: true,
-  })
-)
 
 app.use(express.json())
 

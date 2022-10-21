@@ -32,9 +32,6 @@ router.post('/login', function (req, res, next) {
               message: 'Auth failed 2',
             })
           } else {
-            req.session.loggedin = true
-            req.session.username = username
-
             const token = jwt.sign(
               {
                 userId: result[0].id,
@@ -87,9 +84,6 @@ router.post('/login', function (req, res, next) {
                 message: 'Auth failed',
               })
             } else {
-              req.session.loggedin = true
-              req.session.username = newusername
-
               const token = jwt.sign(
                 {
                   userId: result[0].id,
@@ -146,9 +140,6 @@ router.post('/login', function (req, res, next) {
                 message: 'Auth failed',
               })
             } else {
-              req.session.loggedin = true
-              req.session.username = newusername
-
               const token = jwt.sign(
                 {
                   userId: result[0].id,
@@ -202,8 +193,6 @@ router.post('/login', function (req, res, next) {
 })
 
 router.get('/logout', function (req, res, next) {
-  req.session.destroy()
-
   res.redirect('/')
 })
 
