@@ -36,4 +36,4 @@ app.use((req, res, next) => {
 app.use('/api/users', userRoutes)
 app.use('/api/departments', departmentRoutes)
 
-app.listen(process.env.PORT || 3000)
+app.listen(process.env.PORT)
