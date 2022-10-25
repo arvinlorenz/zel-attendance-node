@@ -3,6 +3,8 @@ var express = require('express')
 const userRoutes = require('./routes/users')
 const departmentRoutes = require('./routes/departments')
 const app = express()
+var os = require('os')
+console.log(os.hostname())
 
 app.use(express.json())
 
