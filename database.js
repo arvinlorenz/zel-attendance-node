@@ -5,11 +5,6 @@ var dbConfig = {
   password: process.env.DB_PW,
 }
 var connection
-connection.connect(function (err) {
-  if (err) throw err
-  console.log('Connected!')
-  console.log('Running in Port', process.env.PORT)
-})
 
 function handleDisconnect() {
   connection = mysql.createConnection(dbConfig) // Recreate the connection, since the old one cannot be reused.
