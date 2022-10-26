@@ -8,6 +8,14 @@ var connection
 
 function handleDisconnect() {
   connection = mysql.createConnection(dbConfig) // Recreate the connection, since the old one cannot be reused.
+
+  var del = connection._protocol._delegateError
+  connection._protocol._delegateError = function (err, sequence) {
+    if (err.fatal) {
+      console.trace('fatal error: ' + err.message)
+    }
+    return del.call(this, err, sequence)
+  }
   connection.connect(function onConnect(err) {
     // The server is either down
     if (err) {
