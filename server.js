@@ -27,13 +27,12 @@ app.use((req, res, next) => {
 app.use('/api/users', userRoutes)
 app.use('/api/departments', departmentRoutes)
 
-app.listen(process.env.PORT || 8080)
-// https
-//   .createServer(
-//     {
-//       key: privateKey,
-//       cert: certificate,
-//     },
-//     app
-//   )
-//   .listen(process.env.PORT || 8443)
+https
+  .createServer(
+    {
+      key: privateKey,
+      cert: certificate,
+    },
+    app
+  )
+  .listen(process.env.PORT || 8443)
