@@ -27,7 +27,6 @@ app.use((req, res, next) => {
 app.use('/api/users', userRoutes)
 app.use('/api/departments', departmentRoutes)
 
-app.listen(process.env.PORT || 8443)
 https
   .createServer(
     {
@@ -36,4 +35,4 @@ https
     },
     app
   )
-  .listen(port)
+  .listen(process.env.PORT || 8443)
