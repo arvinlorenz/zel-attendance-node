@@ -18,7 +18,6 @@ router.post('/login', function (req, res, next) {
 
   mysql_pool.getConnection(function (err, connection) {
     if (err) {
-      connection.release()
       console.log(' Error getting mysql_pool connection: ' + err)
       throw err
     }
@@ -27,14 +26,12 @@ router.post('/login', function (req, res, next) {
       [username],
       async (err, result) => {
         if (err) {
-          connection.release()
           console.log(err)
           res.status(201).json({
             message: 'Auth failed 1',
           })
         } else {
           if (result.length == 0) {
-            connection.release()
             parentLogin(username, password)
           }
 
@@ -77,7 +74,6 @@ router.post('/login', function (req, res, next) {
 
     mysql_pool.getConnection(function (err, connection) {
       if (err) {
-        connection.release()
         console.log(' Error getting mysql_pool connection: ' + err)
         throw err
       }
@@ -86,14 +82,12 @@ router.post('/login', function (req, res, next) {
         [newusername],
         (err, result) => {
           if (err) {
-            connection.release()
             console.log(err)
             res.status(201).json({
               message: 'Auth failed',
             })
           } else {
             if (result.length == 0) {
-              connection.release()
               res.status(400).json({
                 message: 'Auth failed',
               })
@@ -105,7 +99,6 @@ router.post('/login', function (req, res, next) {
                 result[0].last_name.trim().toLowerCase()
 
               if (passed == false) {
-                connection.release()
                 res.status(400).json({
                   message: 'Auth failed',
                 })
@@ -135,7 +128,6 @@ router.post('/login', function (req, res, next) {
           }
         }
       )
-      connection.release()
     })
   }
 
@@ -144,7 +136,6 @@ router.post('/login', function (req, res, next) {
 
     mysql_pool.getConnection(function (err, connection) {
       if (err) {
-        connection.release()
         console.log(' Error getting mysql_pool connection: ' + err)
         throw err
       }
@@ -153,15 +144,12 @@ router.post('/login', function (req, res, next) {
         [newusername],
         (err, result) => {
           if (err) {
-            connection.release()
             console.log(err)
             res.status(201).json({
               message: 'Auth failed',
             })
           } else {
             if (result.length == 0) {
-              connection.release()
-
               res.status(400).json({
                 message: 'Auth failed',
               })
@@ -201,7 +189,6 @@ router.post('/login', function (req, res, next) {
           }
         }
       )
-      connection.release()
     })
   }
   //   var username = req.body.username
