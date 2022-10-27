@@ -3,11 +3,6 @@ var express = require('express')
 const userRoutes = require('./routes/users')
 const departmentRoutes = require('./routes/departments')
 const app = express()
-const https = require('https')
-const fs = require('fs')
-const privateKey = fs.readFileSync('zel-zams_com.key')
-const certificate = fs.readFileSync('zel-zams_com_integrated.crt')
-
 app.use(express.json())
 
 app.use((req, res, next) => {
@@ -27,12 +22,4 @@ app.use((req, res, next) => {
 app.use('/api/users', userRoutes)
 app.use('/api/departments', departmentRoutes)
 
-https
-  .createServer(
-    {
-      key: privateKey,
-      cert: certificate,
-    },
-    app
-  )
-  .listen(process.env.PORT || 8443)
+app.listen(process.env.PORT || 8080)
