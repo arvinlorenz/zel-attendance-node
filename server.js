@@ -3,9 +3,6 @@ var express = require('express')
 const userRoutes = require('./routes/users')
 const departmentRoutes = require('./routes/departments')
 const app = express()
-var os = require('os')
-console.log(os.hostname())
-
 app.use(express.json())
 
 app.use((req, res, next) => {
@@ -21,17 +18,6 @@ app.use((req, res, next) => {
   )
   next()
 })
-
-// var connection = mysql.createConnection({
-//   host: 'zel-zam.cqhxplikdrze.ap-southeast-1.rds.amazonaws.com',
-//   user: 'zeladmin',
-//   password: 'Password_1234',
-// })
-
-// connection.connect(function (err) {
-//   if (err) throw err
-//   console.log('Connected!')
-// })
 
 app.use('/api/users', userRoutes)
 app.use('/api/departments', departmentRoutes)

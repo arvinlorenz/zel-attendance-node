@@ -1,34 +1,49 @@
 var express = require('express')
 var router = express.Router()
+var mysql = require('mysql')
 
-var connection = require('../database.js')
-const checkAuth = require('../middleware/check-auth')
+var mysql_pool = mysql.createPool({
+  connectionLimit: 100,
+  host: process.env.DB_URI,
+  user: process.env.DB_USER,
+  password: process.env.DB_PW,
+  database: 'dbrf3',
+})
+
 router.get('/', function (req, res, next) {
-  connection.query('select * from dbrf3.departments', [], (err, result) => {
+  mysql_pool.getConnection(function (err, connection) {
     if (err) {
-      console.log(err)
-      res.status(400).json({
-        message: 'failed',
-      })
-    } else {
-      if (result.length == 0) {
+      connection.release()
+      console.log(' Error getting mysql_pool connection: ' + err)
+      throw err
+    }
+    connection.query('select * from departments', [], (err, result) => {
+      if (err) {
+        console.log(err)
         res.status(400).json({
           message: 'failed',
         })
       } else {
-        res.status(200).json({
-          data: result.map((d) => {
-            return {
-              id: d.id,
-              department: d.department,
-              section: d.section,
-              yearLevel: d.year_level,
-              user_type: d.user_type,
-            }
-          }),
-        })
+        if (result.length == 0) {
+          res.status(400).json({
+            message: 'failed',
+          })
+        } else {
+          res.status(200).json({
+            data: result.map((d) => {
+              return {
+                id: d.id,
+                department: d.department,
+                section: d.section,
+                yearLevel: d.year_level,
+                user_type: d.user_type,
+              }
+            }),
+          })
+        }
       }
-    }
+      connection.release()
+    })
   })
 })
 
@@ -76,28 +91,71 @@ router.post('/getRecipients', function (req, res, next) {
       var level = levelsAndSections[0].level
       var sections = levelsAndSections[0].sections.toString()
       console.log(level, sections)
-      connection.query(
-        'select year_level,section, lrn from dbrf3.students where FIND_IN_SET(year_level, ?) AND FIND_IN_SET(section, ?)',
-        [level, sections],
-        (err, result) => {
-          if (err) {
-            console.log(err)
-            res.status(400).json({
-              message: 'failed',
+
+      mysql_pool.getConnection(function (err, connection) {
+        if (err) {
+          connection.release()
+          console.log(' Error getting mysql_pool connection: ' + err)
+          throw err
+        }
+        connection.query(
+          'select year_level,section, lrn from students where FIND_IN_SET(year_level, ?) AND FIND_IN_SET(section, ?)',
+          [level, sections],
+          (err, result) => {
+            if (err) {
+              console.log(err)
+              res.status(400).json({
+                message: 'failed',
+              })
+            }
+            console.log(result.map((r) => r.sid))
+            res.status(200).json({
+              recipients: result.map((r) =>
+                r.lrn.trim().replaceAll('-', '').toLowerCase()
+              ),
             })
           }
-          console.log(result.map((r) => r.sid))
-          res.status(200).json({
-            recipients: result.map((r) =>
-              r.lrn.trim().replaceAll('-', '').toLowerCase()
-            ),
-          })
-        }
-      )
+        )
+      })
     } else {
       console.log(departments)
+
+      mysql_pool.getConnection(function (err, connection) {
+        if (err) {
+          connection.release()
+          console.log(' Error getting mysql_pool connection: ' + err)
+          throw err
+        }
+        connection.query(
+          'select department, lrn from students where FIND_IN_SET(department, ?)',
+          [departments],
+          (err, result) => {
+            if (err) {
+              console.log(err)
+              res.status(400).json({
+                message: 'failed',
+              })
+            }
+            console.log(result.map((r) => r.lrn))
+            res.status(200).json({
+              recipients: result.map((r) =>
+                r.lrn.trim().replaceAll('-', '').toLowerCase()
+              ),
+            })
+          }
+        )
+      })
+    }
+  } else {
+    mysql_pool.getConnection(function (err, connection) {
+      if (err) {
+        connection.release()
+        console.log(' Error getting mysql_pool connection: ' + err)
+        throw err
+      }
+
       connection.query(
-        'select department, lrn from dbrf3.students where FIND_IN_SET(department, ?)',
+        'select department, sid from staffs where FIND_IN_SET(department, ?)',
         [departments],
         (err, result) => {
           if (err) {
@@ -106,35 +164,18 @@ router.post('/getRecipients', function (req, res, next) {
               message: 'failed',
             })
           }
-          console.log(result.map((r) => r.lrn))
+
           res.status(200).json({
             recipients: result.map((r) =>
-              r.lrn.trim().replaceAll('-', '').toLowerCase()
+              r.sid.trim().replaceAll('-', '').toLowerCase()
             ),
           })
         }
       )
-    }
-  } else {
-    connection.query(
-      'select department, sid from dbrf3.staffs where FIND_IN_SET(department, ?)',
-      [departments],
-      (err, result) => {
-        if (err) {
-          console.log(err)
-          res.status(400).json({
-            message: 'failed',
-          })
-        }
-
-        res.status(200).json({
-          recipients: result.map((r) =>
-            r.sid.trim().replaceAll('-', '').toLowerCase()
-          ),
-        })
-      }
-    )
+    })
   }
+
+  connection.release()
 })
 
 module.exports = router
