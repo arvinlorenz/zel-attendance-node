@@ -3,6 +3,7 @@ var dbConfig = {
   host: process.env.DB_URI,
   user: process.env.DB_USER,
   password: process.env.DB_PW,
+  port: 3308,
 }
 var connection
 
