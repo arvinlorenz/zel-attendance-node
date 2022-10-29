@@ -13,7 +13,6 @@ var mysql_pool = mysql.createPool({
 router.get('/', function (req, res, next) {
   mysql_pool.getConnection(function (err, connection) {
     if (err) {
-      connection.release()
       console.log(' Error getting mysql_pool connection: ' + err)
       throw err
     }
