@@ -115,6 +115,7 @@ router.post('/getRecipients', function (req, res, next) {
             })
           }
         )
+        connection.release()
       })
     } else {
       console.log(departments)
@@ -143,6 +144,7 @@ router.post('/getRecipients', function (req, res, next) {
             })
           }
         )
+        connection.release()
       })
     }
   } else {
@@ -171,10 +173,9 @@ router.post('/getRecipients', function (req, res, next) {
           })
         }
       )
+      connection.release()
     })
   }
-
-  connection.release()
 })
 
 module.exports = router
