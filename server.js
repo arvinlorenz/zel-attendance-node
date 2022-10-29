@@ -27,7 +27,7 @@ app.use((req, res, next) => {
 app.use('/api/users', userRoutes)
 app.use('/api/departments', departmentRoutes)
 
-https
+var server = https
   .createServer(
     {
       key: privateKey,
@@ -36,3 +36,7 @@ https
     app
   )
   .listen(process.env.PORT || 8443)
+server.on('error', function (e) {
+  // Handle your error here
+  console.log(e)
+})
