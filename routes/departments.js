@@ -1,6 +1,7 @@
 var express = require('express')
 var router = express.Router()
 var mysql = require('mysql')
+var async = require('async')
 
 var mysql_pool = mysql.createPool({
   connectionLimit: 100,
@@ -87,9 +88,10 @@ router.post('/getRecipients', function (req, res, next) {
         }
       }, [])
       console.log(levelsAndSections)
-      var level = levelsAndSections[0].level
-      var sections = levelsAndSections[0].sections.toString()
-      console.log(level, sections)
+
+      // var level = levelsAndSections[0].level
+      // var sections = levelsAndSections[0].sections.toString()
+      // console.log(level, sections)
 
       mysql_pool.getConnection(function (err, connection) {
         if (err) {
@@ -97,24 +99,67 @@ router.post('/getRecipients', function (req, res, next) {
           console.log(' Error getting mysql_pool connection: ' + err)
           throw err
         }
-        connection.query(
-          'select year_level,section, lrn from students where FIND_IN_SET(year_level, ?) AND FIND_IN_SET(section, ?)',
-          [level, sections],
-          (err, result) => {
-            if (err) {
-              console.log(err)
-              res.status(400).json({
-                message: 'failed',
-              })
-            }
-            console.log(result.map((r) => r.sid))
+        // connection.query(
+        //   'select year_level,section, lrn from students where FIND_IN_SET(year_level, ?) AND FIND_IN_SET(section, ?)',
+        //   [level, sections],
+        //   (err, result) => {
+        //     if (err) {
+        //       console.log(err)
+        //       res.status(400).json({
+        //         message: 'failed',
+        //       })
+        //     }
+        //     console.log(result.map((r) => r.sid))
+        //     res.status(200).json({
+        //       recipients: result.map((r) =>
+        //         r.lrn.trim().replaceAll('-', '').toLowerCase()
+        //       ),
+        //     })
+        //   }
+        // )
+        var recipients = []
+
+        async.forEachOf(
+          levelsAndSections,
+          (levelsAndSection, key, callback) => {
+            var level = levelsAndSection.level
+            var sections = levelsAndSection.sections.toString()
+            connection.query(
+              'select year_level,section, lrn from students where FIND_IN_SET(year_level, ?) AND FIND_IN_SET(section, ?)',
+              [level, sections],
+              (err, result) => {
+                if (err) {
+                  console.log(err)
+                  res.status(400).json({
+                    message: 'failed',
+                  })
+                }
+
+                try {
+                  recipients = [
+                    ...recipients,
+                    ...result.map((r) =>
+                      r.lrn.trim().replaceAll('-', '').toLowerCase()
+                    ),
+                  ]
+                  console.log('recipients', recipients)
+                } catch (e) {
+                  return callback(e)
+                }
+                callback()
+              }
+            )
+          },
+          (err) => {
+            if (err) console.error(err.message)
+            // configs is now a map of JSON data
+            console.log(recipients)
             res.status(200).json({
-              recipients: result.map((r) =>
-                r.lrn.trim().replaceAll('-', '').toLowerCase()
-              ),
+              recipients,
             })
           }
         )
+
         connection.release()
       })
     } else {
