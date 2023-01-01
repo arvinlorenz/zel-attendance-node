@@ -80,7 +80,7 @@ router.post('/', function (req, res, next) {
   admin
     .database()
     .ref('attendance')
-    .set(obj, function (error) {
+    .push(obj, function (error) {
       if (error) {
         // The write failed...
         console.log('Failed with error: ' + error)
