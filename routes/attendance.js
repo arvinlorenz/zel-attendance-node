@@ -61,43 +61,40 @@ router.get('/', function (req, res, next) {
 
 router.post('/', function (req, res, next) {
   console.log('HOORAY', req.query)
-  res.status(200).json({
-    message: 'attendance was successfully created',
-  })
 
-  // var recipients = req.body.recipients
-  // var datetime = req.body.datetime
-  // var status = req.body.status
-  // var timePeriod = req.body.recipients
-  // var title = req.body.Attendance
-  // var body = req.body.body
-  // var obj = {
-  //   recipients,
-  //   datetime,
-  //   status,
-  //   timePeriod,
-  //   title,
-  //   body,
-  // }
+  var recipients = req.query.recipients
+  var datetime = req.query.datetime
+  var status = req.query.status
+  var timePeriod = req.query.recipients
+  var title = req.query.Attendance
+  var body = req.query.body
+  var obj = {
+    recipients,
+    datetime,
+    status,
+    timePeriod,
+    title,
+    body,
+  }
 
-  // admin
-  //   .database()
-  //   .ref('attendance')
-  //   .set(obj, function (error) {
-  //     if (error) {
-  //       // The write failed...
-  //       console.log('Failed with error: ' + error)
-  //       res.status(400).json({
-  //         message: error,
-  //       })
-  //     } else {
-  //       // The write was successful...
-  //       console.log('success')
-  //       res.status(200).json({
-  //         message: 'attendance was successfully created',
-  //       })
-  //     }
-  //   })
+  admin
+    .database()
+    .ref('attendance')
+    .set(obj, function (error) {
+      if (error) {
+        // The write failed...
+        console.log('Failed with error: ' + error)
+        res.status(400).json({
+          message: error,
+        })
+      } else {
+        // The write was successful...
+        console.log('success')
+        res.status(200).json({
+          message: 'attendance was successfully created',
+        })
+      }
+    })
 
   // database.ref('attendance').set(obj, function (error) {
   //   if (error) {
