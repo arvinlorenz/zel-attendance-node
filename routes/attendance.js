@@ -69,6 +69,7 @@ router.get('/', function (req, res, next) {
 })
 
 router.post('/', function (req, res, next) {
+  console.log('HOORAY', req.body)
   var recipients = req.body.recipients
   var datetime = req.body.datetime
   var status = req.body.status
