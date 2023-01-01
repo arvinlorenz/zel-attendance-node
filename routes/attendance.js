@@ -62,7 +62,7 @@ router.get('/', function (req, res, next) {
 router.post('/', function (req, res, next) {
   console.log('HOORAY', req.query)
 
-  var recipients = req.query.recipients
+  var recipients = [req.query.recipients]
   var datetime = Number(req.query.datetime)
   var status = req.query.status
   var timePeriod = req.query.timePeriod
