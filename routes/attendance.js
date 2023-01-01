@@ -1,27 +1,18 @@
 var express = require('express')
 var router = express.Router()
 var mysql = require('mysql')
-var firebase = require('firebase')
-// Import the functions you need from the SDKs you need
-// import { initializeApp } from 'firebase/app'
-// TODO: Add SDKs for Firebase products that you want to use
-// https://firebase.google.com/docs/web/setup#available-libraries
 
-// Your web app's Firebase configuration
-const firebaseConfig = {
-  apiKey: 'AIzaSyByuRr4RrsgLMSUGcCqE6YgKRtxHR7T6AA',
-  authDomain: 'zel-attendance.firebaseapp.com',
+var admin = require('firebase-admin')
+
+var serviceAccount = require('../serviceAccountKey.json')
+
+admin.initializeApp({
+  credential: admin.credential.cert(serviceAccount),
   databaseURL:
     'https://zel-attendance-default-rtdb.asia-southeast1.firebasedatabase.app',
-  projectId: 'zel-attendance',
-  storageBucket: 'zel-attendance.appspot.com',
-  messagingSenderId: '273479016700',
-  appId: '1:273479016700:web:9af34defdc7f112172b779',
-}
+})
 
-// Initialize Firebase
-firebase.initializeApp(firebaseConfig)
-var database = firebase.database()
+// Retrieve services via the defaultApp variable...
 
 var mysql_pool = mysql.createPool({
   connectionLimit: 100,
@@ -84,21 +75,40 @@ router.post('/', function (req, res, next) {
     title,
     body,
   }
-  database.ref('attendance').set(obj, function (error) {
-    if (error) {
-      // The write failed...
-      console.log('Failed with error: ' + error)
-      res.status(400).json({
-        message: error,
-      })
-    } else {
-      // The write was successful...
-      console.log('success')
-      res.status(200).json({
-        message: 'attendance was successfully created',
-      })
-    }
-  })
+
+  admin
+    .database()
+    .ref('attendance')
+    .set(obj, function (error) {
+      if (error) {
+        // The write failed...
+        console.log('Failed with error: ' + error)
+        res.status(400).json({
+          message: error,
+        })
+      } else {
+        // The write was successful...
+        console.log('success')
+        res.status(200).json({
+          message: 'attendance was successfully created',
+        })
+      }
+    })
+  // database.ref('attendance').set(obj, function (error) {
+  //   if (error) {
+  //     // The write failed...
+  //     console.log('Failed with error: ' + error)
+  //     res.status(400).json({
+  //       message: error,
+  //     })
+  //   } else {
+  //     // The write was successful...
+  //     console.log('success')
+  //     res.status(200).json({
+  //       message: 'attendance was successfully created',
+  //     })
+  //   }
+  // })
 })
 
 // recipients: ['lrnNumber']
