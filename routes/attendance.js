@@ -63,7 +63,7 @@ router.post('/', function (req, res, next) {
   console.log('HOORAY', req.query)
 
   var recipients = req.query.recipients
-  var datetime = new Date(req.query.datetime).getTime()
+  var datetime = Number(req.query.datetime)
   var status = req.query.status
   var timePeriod = req.query.timePeriod
   var title = req.query.title || 'Attendance'
