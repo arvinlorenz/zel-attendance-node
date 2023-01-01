@@ -1,6 +1,27 @@
 var express = require('express')
 var router = express.Router()
 var mysql = require('mysql')
+var firebase = require('firebase')
+// Import the functions you need from the SDKs you need
+// import { initializeApp } from 'firebase/app'
+// TODO: Add SDKs for Firebase products that you want to use
+// https://firebase.google.com/docs/web/setup#available-libraries
+
+// Your web app's Firebase configuration
+const firebaseConfig = {
+  apiKey: 'AIzaSyByuRr4RrsgLMSUGcCqE6YgKRtxHR7T6AA',
+  authDomain: 'zel-attendance.firebaseapp.com',
+  databaseURL:
+    'https://zel-attendance-default-rtdb.asia-southeast1.firebasedatabase.app',
+  projectId: 'zel-attendance',
+  storageBucket: 'zel-attendance.appspot.com',
+  messagingSenderId: '273479016700',
+  appId: '1:273479016700:web:9af34defdc7f112172b779',
+}
+
+// Initialize Firebase
+firebase.initializeApp(firebaseConfig)
+var database = firebase.database()
 
 var mysql_pool = mysql.createPool({
   connectionLimit: 100,
@@ -11,6 +32,7 @@ var mysql_pool = mysql.createPool({
 })
 // var connection = require('../database.js')
 const checkAuth = require('../middleware/check-auth')
+
 router.get('/', function (req, res, next) {
   mysql_pool.getConnection(function (err, connection) {
     if (err) {
@@ -45,5 +67,43 @@ router.get('/', function (req, res, next) {
     connection.release()
   })
 })
+
+router.post('/', function (req, res, next) {
+  var recipients = req.body.recipients
+  var datetime = req.body.datetime
+  var status = req.body.status
+  var timePeriod = req.body.recipients
+  var title = req.body.Attendance
+  var body = req.body.body
+  var obj = {
+    recipients,
+    datetime,
+    status,
+    timePeriod,
+    title,
+    body,
+  }
+  database.ref('attendance').set(obj, function (error) {
+    if (error) {
+      // The write failed...
+      console.log('Failed with error: ' + error)
+      res.status(400).json({
+        message: error,
+      })
+    } else {
+      // The write was successful...
+      console.log('success')
+      res.status(200).json({
+        message: 'attendance was successfully created',
+      })
+    }
+  })
+})
+
+// recipients: ['lrnNumber']
+// datetime: 1670245730491
+// title: 'Attendance'
+// status: 'LOG IN' | 'LOG OUT'
+// timePeriod: 'Morning' | 'Afternoon'
 
 module.exports = router

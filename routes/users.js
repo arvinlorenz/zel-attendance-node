@@ -41,6 +41,7 @@ router.post('/login', function (req, res, next) {
             var passed = await bcrypt.compare(password, hashedPassword)
             console.log(passed)
             if (passed == false) {
+              console.log('admin logging in...')
               res.status(201).json({
                 message: 'Auth failed 2',
               })
@@ -562,6 +563,58 @@ router.post('/change-password', function (req, res, next) {
       connection.release()
     })
   }
+})
+router.get('/employees', function (req, res, next) {
+  mysql_pool.getConnection(function (err, connection) {
+    if (err) {
+      connection.release()
+      console.log(' Error getting mysql_pool connection: ' + err)
+      throw err
+    }
+
+    connection.query('select * from staffs', [], (err, result) => {
+      if (err) {
+        console.log(err)
+        res.status(400).json({
+          message: 'failed',
+        })
+      }
+
+      res.status(200).json({
+        employees: result,
+      })
+    })
+    connection.release()
+  })
+})
+router.put('/employees', function (req, res, next) {
+  var recipients = req.body.recipientsData
+  var employeeId = req.body.employeeId
+  mysql_pool.getConnection(function (err, connection) {
+    if (err) {
+      connection.release()
+      console.log(' Error getting mysql_pool connection: ' + err)
+      throw err
+    }
+
+    connection.query(
+      'UPDATE staffs SET canSendAnnouncements = ?, announcementRecipients = ? where id = ?',
+      [1, recipients, employeeId],
+      (err, result) => {
+        if (err) {
+          console.log(err)
+          res.status(400).json({
+            message: 'failed',
+          })
+        }
+
+        res.status(200).json({
+          message: 'Recipients for this user was updated successfully',
+        })
+      }
+    )
+    connection.release()
+  })
 })
 router.get('/logout', function (req, res, next) {
   res.redirect('/')
