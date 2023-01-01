@@ -66,7 +66,7 @@ router.post('/', function (req, res, next) {
   var datetime = req.query.datetime
   var status = req.query.status
   var timePeriod = req.query.recipients
-  var title = req.query.Attendance
+  var title = req.query.title || 'Attendance'
   var body = req.query.body
   var obj = {
     recipients,
