@@ -59,7 +59,7 @@ router.get('/', function (req, res, next) {
   })
 })
 
-router.get('/', function (req, res, next) {
+router.post('/', function (req, res, next) {
   console.log('HOORAY', req.query)
   res.status(200).json({
     message: 'attendance was successfully created',
