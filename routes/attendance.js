@@ -59,7 +59,7 @@ router.get('/', function (req, res, next) {
   })
 })
 
-router.post('/', function (req, res, next) {
+router.get('/tap', function (req, res, next) {
   console.log('HOORAY', req.query)
 
   var recipients = [req.query.recipients]
