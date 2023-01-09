@@ -24,36 +24,36 @@ var mysql_pool = mysql.createPool({
 // var connection = require('../database.js')
 const checkAuth = require('../middleware/check-auth')
 
-router.get('/', function (req, res, next) {
+router.post('/tapsByCardNumber', function (req, res, next) {
+  var cardNumber = req.body.cardNumber
   mysql_pool.getConnection(function (err, connection) {
     if (err) {
       connection.release()
       console.log(' Error getting mysql_pool connection: ' + err)
       throw err
     }
-    connection.query('select * from dbrf3.taps', [], (err, result) => {
-      if (err) {
-        console.log(err)
-        res.status(400).json({
-          message: 'failed',
-        })
-      } else {
-        if (result.length == 0) {
+    connection.query(
+      'select * from dbrf3.taps where card_number=?',
+      [cardNumber],
+      (err, result) => {
+        if (err) {
+          console.log(err)
           res.status(400).json({
             message: 'failed',
           })
         } else {
-          res.status(200).json({
-            data: result.map((a) => {
-              return {
-                id: a.id,
-                date_time: a.date_time,
-              }
-            }),
-          })
+          if (result.length == 0) {
+            res.status(400).json({
+              message: 'failed',
+            })
+          } else {
+            res.status(200).json({
+              data: result,
+            })
+          }
         }
       }
-    })
+    )
 
     connection.release()
   })
@@ -63,12 +63,14 @@ router.get('/tap', function (req, res, next) {
   console.log('HOORAY', req.query)
 
   var recipients = [req.query.recipients]
+  var tapId = Number(req.query.tapId)
   var datetime = Number(req.query.datetime)
   var status = req.query.status
   var timePeriod = req.query.timePeriod
   var title = req.query.title || 'Attendance'
   var body = req.query.body
   var obj = {
+    tapId,
     recipients,
     datetime,
     status,
