@@ -15,7 +15,7 @@ var mysql_pool = mysql.createPool({
 router.post('/login', function (req, res, next) {
   var username = req.body.username
   var password = req.body.password
-
+  console.log(password, username, password)
   mysql_pool.getConnection(function (err, connection) {
     if (err) {
       console.log(' Error getting mysql_pool connection: ' + err)

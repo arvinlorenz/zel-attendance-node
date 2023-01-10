@@ -3,6 +3,7 @@ var express = require('express')
 const userRoutes = require('./routes/users')
 const departmentRoutes = require('./routes/departments')
 const attendanceRoutes = require('./routes/attendance')
+const announcementRoutes = require('./routes/announcements')
 const app = express()
 const https = require('https')
 const fs = require('fs')
@@ -28,6 +29,7 @@ app.use((req, res, next) => {
 app.use('/api/users', userRoutes)
 app.use('/api/departments', departmentRoutes)
 app.use('/api/attendance', attendanceRoutes)
+app.use('/api/announcements', announcementRoutes)
 var server = https
   .createServer(
     {
