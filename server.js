@@ -30,18 +30,18 @@ app.use('/api/users', userRoutes)
 app.use('/api/departments', departmentRoutes)
 app.use('/api/attendance', attendanceRoutes)
 app.use('/api/announcements', announcementRoutes)
-var server = https
-  .createServer(
-    {
-      key: privateKey,
-      cert: certificate,
-    },
-    app
-  )
-  .listen(process.env.PORT || 8443)
-server.on('error', function (e) {
-  // Handle your error here
-  console.log(e)
-})
+// var server = https
+//   .createServer(
+//     {
+//       key: privateKey,
+//       cert: certificate,
+//     },
+//     app
+//   )
+//   .listen(process.env.PORT || 8443)
+// server.on('error', function (e) {
+//   // Handle your error here
+//   console.log(e)
+// })
 
-// app.listen(3000)
+app.listen(3000)
