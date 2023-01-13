@@ -42,15 +42,9 @@ router.post('/tapsByCardNumber', function (req, res, next) {
             message: 'failed',
           })
         } else {
-          if (result.length == 0) {
-            res.status(400).json({
-              message: 'failed',
-            })
-          } else {
-            res.status(200).json({
-              data: result,
-            })
-          }
+          res.status(200).json({
+            data: result,
+          })
         }
       }
     )
