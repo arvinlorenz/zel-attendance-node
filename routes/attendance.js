@@ -57,7 +57,7 @@ router.get('/tap', function (req, res, next) {
   console.log('HOORAY', req.query)
 
   var recipients = [req.query.recipients]
-  var username = req.query.recipients
+  var username = req.query.recipients.toLowerCase()
   var tapId = Number(req.query.tapId)
   var datetime = Number(req.query.datetime)
   var status = req.query.status
