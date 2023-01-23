@@ -1,0 +1,55 @@
+body {
+  font-family: Arial, sans-serif;
+  background-color: #fee3c8; /* Orange color */
+}
+
+header {
+  text-align: center;
+  background-color: #f78f1e; /* Darker orange color */
+  color: white;
+  padding: 20px;
+}
+
+nav ul {
+  display: flex;
+  justify-content: center;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+nav a {
+  color: white;
+  text-decoration: none;
+  padding: 10px;
+}
+
+main {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+
+section {
+  background-color: white;
+  padding: 20px;
+  width: 30%;
+  margin: 10px;
+}
+
+footer {
+  text-align: center;
+  background-color: #f78f1e; /* Darker orange color */
+  color: white;
+  padding: 20px;
+}
+
+/* Responsive styles */
+@media (max-width: 768px) {
+  main {
+    flex-wrap: nowrap;
+  }
+  section {
+    width: 100%;
+  }
+}
