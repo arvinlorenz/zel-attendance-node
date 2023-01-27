@@ -10,8 +10,8 @@ const https = require('https')
 const fs = require('fs')
 const path = require('path')
 
-const privateKey = fs.readFileSync('7jaxxrzakl.private.key')
-const certificate = fs.readFileSync('7jaxxrzaklzel-zams.com_ca.crt')
+const privateKey = fs.readFileSync('zel-zams_com.key')
+const certificate = fs.readFileSync('zel-zams_com_integrated.crt')
 
 app.use(express.json())
 app.use(express.static(path.join(__dirname, 'public')))
