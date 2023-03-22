@@ -516,7 +516,7 @@ router.post('/change-password', function (req, res, next) {
                   })
                 }
                 if (passed) {
-                  var hashedPassword = await bcrypt.hash(newPassword, 10)
+                  var hashedPassword = await bcrypt.hash(newPassword, 12)
                   connection.query(
                     'UPDATE staffs SET isPasswordChanged = ?, password = ? where replace(sid, "-", "") = ?',
                     [1, hashedPassword, username],
