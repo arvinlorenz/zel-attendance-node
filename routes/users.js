@@ -93,6 +93,7 @@ router.post('/login', function (req, res, next) {
             } else {
               // var hashedPassword = result[0].password
               var passed = false
+              console.log(result[0].isPasswordChanged)
               if (!result[0].isPasswordChanged) {
                 passed =
                   password.trim().toLowerCase() ===
