@@ -101,6 +101,7 @@ router.post('/login', function (req, res, next) {
               }
               if (result[0].isPasswordChanged) {
                 passed = await bcrypt.compare(password, result[0].password)
+                console.log('pasado:', passed)
                 if (passed == false) {
                   res.status(400).json({
                     message: 'Auth failed',
