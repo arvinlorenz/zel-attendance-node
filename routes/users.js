@@ -88,12 +88,12 @@ router.post('/login', function (req, res, next) {
               message: 'Auth failed',
             })
           } else {
+            console.log(result[0].isPasswordChanged)
             if (result.length == 0) {
               staffLogin(username, password)
             } else {
               // var hashedPassword = result[0].password
               var passed = false
-              console.log(result[0].isPasswordChanged)
               if (!result[0].isPasswordChanged) {
                 passed =
                   password.trim().toLowerCase() ===
@@ -101,32 +101,33 @@ router.post('/login', function (req, res, next) {
               }
               if (result[0].isPasswordChanged) {
                 passed = await bcrypt.compare(password, result[0].password)
-                if (passed == false) {
-                  res.status(400).json({
-                    message: 'Auth failed',
-                  })
-                } else {
-                  const token = jwt.sign(
-                    {
-                      userId: result[0].id,
-                      username: newusername,
-                    },
-                    process.env.JWT_KEY,
-                    { expiresIn: '9999 years' }
-                  )
+              }
 
-                  res.status(200).json({
-                    token,
+              if (passed == false) {
+                res.status(400).json({
+                  message: 'Auth failed',
+                })
+              } else {
+                const token = jwt.sign(
+                  {
                     userId: result[0].id,
                     username: newusername,
-                    isLoggedIn: true,
-                    userData: {
-                      username: newusername,
-                      isParent: true,
-                      ...result[0],
-                    },
-                  })
-                }
+                  },
+                  process.env.JWT_KEY,
+                  { expiresIn: '9999 years' }
+                )
+
+                res.status(200).json({
+                  token,
+                  userId: result[0].id,
+                  username: newusername,
+                  isLoggedIn: true,
+                  userData: {
+                    username: newusername,
+                    isParent: true,
+                    ...result[0],
+                  },
+                })
               }
             }
           }
